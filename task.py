@@ -5,11 +5,14 @@ import urllib.parse
 from datetime import datetime
 import pyodbc
 import logging
+import configparser
 
 
 logging.basicConfig(filename=r"C:\Users\Lion\Desktop\scraper.log",level=logging.DEBUG, format = '%(asctime)s - %(message)s',datefmt='%d-%b-%y %H:%M:%S')
 logging.info("Extracting information about Justin Trudeau for sysdate-1")
 
+config =  configparser.ConfigParser()
+config.read('api.cfg')
 
 # define parameters for our request to guardian api for sysdate-1
 parameters={
@@ -19,7 +22,7 @@ parameters={
     'format' : 'json',
     'page' : 1,
     'page-size' : 10,
-    'api-key' : "30da9971-7eab-48e8-8525-213e200d921b"
+    'api-key' : config['API']['KEY']
             }
 main_url='https://content.guardianapis.com/search?'
 
