@@ -7,7 +7,6 @@ import pyodbc
 import logging 
 
 logging.basicConfig(filename=r"C:\Users\Lion\Desktop\scraper.log",level=logging.DEBUG, format = '%(asctime)s - %(message)s',datefmt='%d-%b-%y %H:%M:%S')
-
 # define parameters for our request to guardian api for sysdate-1
 parameters={
     'from-date' : '2016-01-01',
@@ -16,26 +15,39 @@ parameters={
     'format' : 'json',
     'page' : 1,
     'page-size' : 10,
-    'api-key' : "your-api-key"
+    'api-key' : "d31abdfe-71d6-4679-a950-e7fd581e0810"
             }
-
-logging.info("Extracting information about Justin Trudeau for sysdate-1")
-
 # add parameters to the main link 
 main_url='https://content.guardianapis.com/search?'
-url=main_url+ urllib.parse.urlencode(parameters).replace('%2520', '%20')
-
-# extract result of our responses and add them to a list to make a dataframe later
+url=main_url+ urllib.parse.urlencode(parameters)
 data= requests.get(url).json()
-my_data = []
-for page in range(200):
-    response = requests.get(url)
-    data = response.json()
-    my_data.extend(data['response']['results'])
-    page = page + 1
+
+
+logging.info("Extracting information about Justin Trudeau for sysdate-1")
+def extractData(params, main_urladdress):
+    url=main_urladdress+ urllib.parse.urlencode(params).replace('%2520', '%20')
+    data= requests.get(url).json()
+    if data['response']['status']=='ok':
+        return data
+fullData = extractData(parameters,main_url)
+
+numberofResults= fullData['response']['total']
+numberofPages= fullData['response']['pages']
+
+def appendfullData(params, numPages, fullData):
+    for currentpage in range(2, numPages+1):
+        parameters['page']= currentpage
+        currentData = extractData(parameters,main_url)
+        if currentData['response']['results'] is not None:
+            fullData['response']['results'].extend(currentData['response']['results'])
+        else:
+            continue
+        
+# extract result of our responses and add them to a list to make a dataframe later
+appendfullData(parameters, numberofPages, fullData)
 
 # just made a dataframe out of created list
-df = pd.DataFrame(my_data)
+df = pd.DataFrame(fullData['response']['results'])
 logging.info("make a dataframe out of the json information we have exctracted")
 
 # save the dataframe to a local folder as a csv file
