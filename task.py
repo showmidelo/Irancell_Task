@@ -75,7 +75,7 @@ cursor = conn.cursor()
 
 # Execute the BULK INSERT command
 try:
-    create_table_query = "CREATE TABLE irancell(column1 int, id ntext,type ntext, sectionName ntext, Date datetime, webTitle ntext, webUrl ntext )"
+    create_table_query = "CREATE TABLE irancell(id ntext,type ntext, sectionName ntext, Date datetime, webTitle ntext, webUrl ntext )"
     truncate_query = "Truncate Table irancell"
     bulk_insert_query = "BULK INSERT [irancell].[dbo].[irancell] FROM 'C:\\Users\\Lion\\Desktop\\Test.csv' WITH (FORMAT = 'CSV', FIRSTROW = 2)"
     cursor.execute(create_table_query)
