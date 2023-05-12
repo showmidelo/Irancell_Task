@@ -59,7 +59,7 @@ df['webPublicationDate'] = pd.to_datetime(df['webPublicationDate'])
 df.rename({"webPublicationDate":"Date"},axis=1,inplace=True)
 
 # save the dataframe to a local folder as a csv file
-df.to_csv(r"C:\Users\Lion\Desktop\Test.csv",sep=",",index=False)
+df.to_csv(r"C:\Users\Lion\Desktop\Test.csv",sep=",",index=False,encoding='utf-8-sig')
 logging.info("save dataframe as a csv file in local folder to put it on the database")
 
 
@@ -75,15 +75,15 @@ cursor = conn.cursor()
 
 # Execute the BULK INSERT command
 try:
-    create_table_query = "CREATE TABLE irancell(id ntext,type ntext, sectionName ntext, Date datetime, webTitle ntext, webUrl ntext )"
+    create_table_query = "CREATE TABLE irancell(id ntext NOT NULL,type ntext, sectionName ntext, Date datetime, webTitle ntext, webUrl ntext )"
     truncate_query = "Truncate Table irancell"
-    bulk_insert_query = "BULK INSERT [irancell].[dbo].[irancell] FROM 'C:\\Users\\Lion\\Desktop\\Test.csv' WITH (FORMAT = 'CSV', FIRSTROW = 2)"
+    bulk_insert_query = "BULK INSERT [irancell].[dbo].[irancell] FROM 'C:\\Users\\Lion\\Desktop\\Test.csv' WITH (FORMAT = 'CSV', FIRSTROW = 2,DATAFILETYPE='char',CODEPAGE = '65001')"
     cursor.execute(create_table_query)
     cursor.execute(truncate_query)
     cursor.execute(bulk_insert_query)
 # if the try raise an error the except would handle it, cause of error is the table have been created before so we just do the bulk insert
 except:
-    bulk_insert_query = "BULK INSERT [irancell].[dbo].[irancell] FROM 'C:\\Users\\Lion\\Desktop\\Test.csv' WITH (FORMAT = 'CSV', FIRSTROW = 2)"
+    bulk_insert_query = "BULK INSERT [irancell].[dbo].[irancell] FROM 'C:\\Users\\Lion\\Desktop\\Test.csv' WITH (FORMAT = 'CSV', FIRSTROW = 2,DATAFILETYPE='char',CODEPAGE = '65001')"
     truncate_query = "Truncate Table irancell"
     cursor.execute(truncate_query)
     cursor.execute(bulk_insert_query)
